@@ -3,7 +3,8 @@ const { Pool } = require('pg');
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-    throw new Error('Falta la variable DATABASE_URL en el entorno.');
+    console.error('❌ DATABASE_URL no está definida en Render');
+    process.exit(1);
 }
 
 const pool = new Pool({
@@ -13,6 +14,10 @@ const pool = new Pool({
     }
 });
 
+pool.on('error', (err) => {
+    console.error('❌ Error inesperado en el pool de PostgreSQL:', err.message);
+});
+
 pool.connect()
     .then(client => {
         console.log('✅ Base de datos conectada correctamente');
@@ -20,6 +25,7 @@ pool.connect()
     })
     .catch(err => {
         console.error('❌ Error de conexión DB:', err.message);
+        process.exit(1);
     });
 
 module.exports = pool;

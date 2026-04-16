@@ -501,17 +501,21 @@ header {
     align-items: center;
     justify-content: center;
     padding: 20px;
+    overflow-y: auto;
 }
 
 .modal-container {
     background: var(--white);
     width: 100%;
     max-width: 620px;
+    max-height: calc(100vh - 40px);
     border-radius: 24px;
     overflow: hidden;
     box-shadow: 0 28px 70px rgba(15, 23, 42, 0.25);
     animation: slideUp 0.26s ease-out;
     border: 1px solid rgba(226, 232, 240, 0.8);
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -531,6 +535,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .modal-header h3 {
@@ -547,6 +552,9 @@ header {
 
 .modal-body {
     padding: 28px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
 }
 
 .modal-footer-custom {
@@ -555,6 +563,8 @@ header {
     justify-content: flex-end;
     gap: 12px;
     flex-wrap: wrap;
+    flex-shrink: 0;
+    background: inherit;
 }
 
 .form-label {
@@ -1457,4 +1467,64 @@ header {
 :root[data-theme="dark"] .solucionado {
     background: rgba(59, 130, 246, 0.14);
     color: #93c5fd;
+}
+
+/* FIX modal nuevo reporte en móvil */
+@media (max-width: 768px) {
+    .modal-overlay {
+        align-items: flex-start;
+        padding: 12px;
+    }
+
+    .modal-container {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100vh - 24px);
+        border-radius: 20px;
+        margin: 0;
+    }
+
+    .modal-header {
+        padding: 18px 18px 14px 18px;
+    }
+
+    .modal-body {
+        padding: 18px;
+    }
+
+    .modal-footer-custom {
+        padding: 0 18px 18px 18px;
+        flex-direction: column-reverse;
+    }
+
+    .modal-footer-custom .btn-primary,
+    .modal-footer-custom .btn-login {
+        width: 100%;
+    }
+
+    .upload-area {
+        padding: 16px;
+    }
+
+    .preview-imagen {
+        max-height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-overlay {
+        padding: 8px;
+    }
+
+    .modal-container {
+        max-height: calc(100vh - 16px);
+        border-radius: 18px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer-custom {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
 }

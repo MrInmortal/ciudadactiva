@@ -1,15 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('registroForm');
+    const form =
+        document.getElementById('registroForm') ||
+        document.getElementById('formRegistro') ||
+        document.querySelector('form');
 
-    if (!form) return;
+    if (!form) {
+        console.error('No se encontró el formulario de registro');
+        return;
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const nombre = document.getElementById('nombre')?.value.trim();
-        const apellido = document.getElementById('apellido')?.value.trim();
-        const email = document.getElementById('email')?.value.trim();
-        const password = document.getElementById('password')?.value.trim();
+        const nombreInput =
+            document.getElementById('nombre') ||
+            document.getElementById('regNombre') ||
+            document.querySelector('input[name="nombre"]');
+
+        const apellidoInput =
+            document.getElementById('apellido') ||
+            document.getElementById('regApellido') ||
+            document.querySelector('input[name="apellido"]');
+
+        const emailInput =
+            document.getElementById('email') ||
+            document.getElementById('regEmail') ||
+            document.querySelector('input[type="email"]') ||
+            document.querySelector('input[name="email"]');
+
+        const passwordInput =
+            document.getElementById('password') ||
+            document.getElementById('regPass') ||
+            document.querySelector('input[type="password"]') ||
+            document.querySelector('input[name="password"]');
+
+        const nombre = nombreInput ? nombreInput.value.trim() : '';
+        const apellido = apellidoInput ? apellidoInput.value.trim() : '';
+        const email = emailInput ? emailInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value.trim() : '';
 
         if (!nombre || !apellido || !email || !password) {
             alert('Completa todos los campos.');

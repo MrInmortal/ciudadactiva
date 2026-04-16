@@ -1,13 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('loginForm');
+    const form =
+        document.getElementById('loginForm') ||
+        document.querySelector('form');
 
-    if (!form) return;
+    if (!form) {
+        console.error('No se encontró el formulario de login');
+        return;
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById('email')?.value.trim();
-        const password = document.getElementById('password')?.value.trim();
+        const emailInput =
+            document.getElementById('email') ||
+            document.getElementById('loginEmail') ||
+            document.querySelector('input[type="email"]') ||
+            document.querySelector('input[name="email"]');
+
+        const passwordInput =
+            document.getElementById('password') ||
+            document.getElementById('loginPassword') ||
+            document.querySelector('input[type="password"]') ||
+            document.querySelector('input[name="password"]');
+
+        const email = emailInput ? emailInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value.trim() : '';
 
         if (!email || !password) {
             alert('Completa todos los campos.');

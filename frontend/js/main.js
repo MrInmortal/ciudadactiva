@@ -51,7 +51,7 @@ function inicializarBotonesAuth() {
 
 async function cargarEstadisticas() {
     try {
-        const response = await fetch('http://localhost:4000/api/estadisticas');
+        const response = await fetch('/api/estadisticas');
         const data = await response.json();
 
         if (!response.ok) {

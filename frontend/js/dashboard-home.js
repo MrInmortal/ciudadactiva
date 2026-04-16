@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function cargarDashboard(user) {
     try {
-        const response = await fetch('http://localhost:4000/api/dashboard/autoridad', {
+        const response = await fetch('/api/dashboard/autoridad', {
             headers: {
                 'x-user-id': user.id,
                 'x-user-role': user.rol

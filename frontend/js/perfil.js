@@ -43,7 +43,7 @@ function inicializarVista(user) {
 
 async function cargarPerfil(id) {
     try {
-        const response = await fetch(`http://localhost:4000/api/usuarios/${id}`);
+        const response = await fetch(`/api/usuarios/${id}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -139,7 +139,7 @@ async function guardarPerfil(e) {
     if (foto) formData.append('foto_perfil', foto);
 
     try {
-        const response = await fetch(`http://localhost:4000/api/usuarios/${user.id}`, {
+        const response = await fetch(`/api/usuarios/${user.id}`, {
             method: 'PUT',
             body: formData
         });
@@ -168,7 +168,7 @@ async function guardarPerfil(e) {
 
 async function cargarHistorial(id) {
     try {
-        const response = await fetch(`http://localhost:4000/api/usuarios/${id}/reportes`);
+        const response = await fetch(`/api/usuarios/${id}/reportes`);
         const data = await response.json();
 
         if (!response.ok) {

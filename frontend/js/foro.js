@@ -186,7 +186,7 @@ function configurarNotificaciones() {
 
 async function cargarNotificaciones() {
     try {
-        const response = await fetch(`http://localhost:4000/api/notificaciones/${currentUser.id}`);
+        const response = await fetch(`/api/notificaciones/${currentUser.id}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -228,7 +228,7 @@ function renderizarNotificaciones(notificaciones) {
     markAll.style.marginBottom = '10px';
     markAll.innerText = 'Marcar todas como leídas';
     markAll.addEventListener('click', async () => {
-        await fetch(`http://localhost:4000/api/notificaciones/usuario/${currentUser.id}/leidas`, {
+        await fetch(`/api/notificaciones/usuario/${currentUser.id}/leidas`, {
             method: 'PUT'
         });
         await cargarNotificaciones();
@@ -248,7 +248,7 @@ function renderizarNotificaciones(notificaciones) {
 
         item.addEventListener('click', async () => {
             if (!n.leida) {
-                await fetch(`http://localhost:4000/api/notificaciones/${n.id}/leida`, {
+                await fetch(`/api/notificaciones/${n.id}/leida`, {
                     method: 'PUT'
                 });
                 await cargarNotificaciones();
@@ -261,7 +261,7 @@ function renderizarNotificaciones(notificaciones) {
 
 async function obtenerReportes() {
     try {
-        const res = await fetch('http://localhost:4000/api/reportes');
+        const res = await fetch('/api/reportes');
         const reportes = await res.json();
 
         if (!Array.isArray(reportes)) {
@@ -400,7 +400,7 @@ function configurarFormularioReporte() {
             let response;
 
             if (editReportId) {
-                response = await fetch(`http://localhost:4000/api/reportes/${editReportId}`, {
+                response = await fetch(`/api/reportes/${editReportId}`, {
                     method: 'PUT',
                     headers: {
                         'x-user-id': currentUser.id,
@@ -410,7 +410,7 @@ function configurarFormularioReporte() {
                 });
             } else {
                 formData.append('usuario_id', Number(currentUser.id));
-                response = await fetch('http://localhost:4000/api/reportes', {
+                response = await fetch('/api/reportes', {
                     method: 'POST',
                     body: formData
                 });
@@ -448,7 +448,7 @@ async function eliminarReporte(id) {
     if (!confirmar) return;
 
     try {
-        const response = await fetch(`http://localhost:4000/api/reportes/${id}`, {
+        const response = await fetch(`/api/reportes/${id}`, {
             method: 'DELETE',
             headers: {
                 'x-user-id': currentUser.id,

@@ -1,32 +1,40 @@
-document.getElementById('formLogin').addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('loginForm');
 
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPass').value;
+    if (!form) return;
 
-    try {
-        const response = await fetch('http://localhost:4000/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-        const data = await response.json();
+        const email = document.getElementById('email')?.value.trim();
+        const password = document.getElementById('password')?.value.trim();
 
-        if (response.ok) {
-            localStorage.setItem('user', JSON.stringify(data.user));
-            alert(`¡Bienvenido, ${data.user.nombre}!`);
-            window.location.href = 'foro.html';
-        } else {
-            alert('Error: ' + data.error);
+        if (!email || !password) {
+            alert('Completa todos los campos.');
+            return;
         }
-    } catch (err) {
-        console.error('Error en el login:', err);
-        alert('Hubo un problema al conectar con el servidor.');
-    }
-});
 
-document.getElementById('togglePassLogin').addEventListener('click', function () {
-    const passInput = document.getElementById('loginPass');
-    passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || 'No se pudo iniciar sesión');
+                return;
+            }
+
+            localStorage.setItem('user', JSON.stringify(data.user));
+            window.location.href = 'foro.html';
+        } catch (error) {
+            console.error('Error login:', error);
+            alert('Problema de conexión con el servidor.');
+        }
+    });
 });

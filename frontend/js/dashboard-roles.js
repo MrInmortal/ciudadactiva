@@ -23,7 +23,7 @@ function configurarBusquedaRoles() {
 
 async function cargarUsuariosRoles() {
     try {
-        const response = await fetch('http://localhost:4000/api/admin/usuarios', {
+        const response = await fetch('/api/admin/usuarios', {
             headers: {
                 'x-user-id': adminUser.id,
                 'x-user-role': adminUser.rol
@@ -126,7 +126,7 @@ function renderizarUsuarios(usuarios) {
 
 async function cambiarRolAdmin(id, rol) {
     try {
-        const response = await fetch(`http://localhost:4000/api/admin/usuarios/${id}/rol`, {
+        const response = await fetch(`/api/admin/usuarios/${id}/rol`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

@@ -33,7 +33,7 @@ function configurarFiltrosDashboard() {
 
 async function cargarDashboard() {
     try {
-        const response = await fetch('http://localhost:4000/api/dashboard/autoridad', {
+        const response = await fetch('/api/dashboard/autoridad', {
             headers: {
                 'x-user-role': currentUser.rol
             }
@@ -66,7 +66,7 @@ async function cargarDashboard() {
 
 async function cargarUsuarios() {
     try {
-        const response = await fetch('http://localhost:4000/api/admin/usuarios', {
+        const response = await fetch('/api/admin/usuarios', {
             headers: {
                 'x-user-role': currentUser.rol
             }
@@ -285,7 +285,7 @@ function renderizarUsuarios() {
 
 async function cambiarEstado(id, estado) {
     try {
-        const response = await fetch(`http://localhost:4000/api/reportes/${id}/estado`, {
+        const response = await fetch(`/api/reportes/${id}/estado`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -320,7 +320,7 @@ async function guardarRespuesta(id) {
     }
 
     try {
-        const response = await fetch(`http://localhost:4000/api/reportes/${id}/respuesta`, {
+        const response = await fetch(`/api/reportes/${id}/respuesta`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -345,7 +345,7 @@ async function guardarRespuesta(id) {
 
 async function cambiarRol(id, rol) {
     try {
-        const response = await fetch(`http://localhost:4000/api/admin/usuarios/${id}/rol`, {
+        const response = await fetch(`/api/admin/usuarios/${id}/rol`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -377,7 +377,7 @@ async function eliminarReporteAutoridad(id) {
     if (!confirmar) return;
 
     try {
-        const response = await fetch(`http://localhost:4000/api/reportes/${id}`, {
+        const response = await fetch(`/api/reportes/${id}`, {
             method: 'DELETE',
             headers: {
                 'x-user-id': currentUser.id,

@@ -43,7 +43,7 @@ function configurarModal() {
 
 async function cargarReportes() {
     try {
-        const response = await fetch('http://localhost:4000/api/dashboard/reportes', {
+        const response = await fetch('/api/dashboard/reportes', {
             headers: {
                 'x-user-id': authorityUser.id,
                 'x-user-role': authorityUser.rol
@@ -227,7 +227,7 @@ async function guardarCambiosModalReporte() {
 
     try {
         if (estado && estado !== reporteActivo.estado) {
-            const estadoResponse = await fetch(`http://localhost:4000/api/reportes/${reporteActivo.id}/estado`, {
+            const estadoResponse = await fetch(`/api/reportes/${reporteActivo.id}/estado`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -245,7 +245,7 @@ async function guardarCambiosModalReporte() {
         }
 
         if (respuesta) {
-            const respResponse = await fetch(`http://localhost:4000/api/reportes/${reporteActivo.id}/respuesta`, {
+            const respResponse = await fetch(`/api/reportes/${reporteActivo.id}/respuesta`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -275,7 +275,7 @@ async function eliminarReporteAuthority(id) {
     if (!confirmar) return;
 
     try {
-        const response = await fetch(`http://localhost:4000/api/reportes/${id}`, {
+        const response = await fetch(`/api/reportes/${id}`, {
             method: 'DELETE',
             headers: {
                 'x-user-id': authorityUser.id,

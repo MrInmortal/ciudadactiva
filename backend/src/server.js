@@ -9,7 +9,7 @@ const pool = require('./db');
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const app = express();
-const PORT = Number(process.env.PORT) || 4000;
+const PORT = process.env.PORT || 4000;
 
 // =========================
 // CARPETA DE SUBIDAS

@@ -1,30 +1,47 @@
-document.getElementById('formRegistro').addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registroForm');
 
-    const datos = {
-        nombre: document.getElementById('regNombre').value.trim(),
-        apellido: document.getElementById('regApellido').value.trim(),
-        email: document.getElementById('regEmail').value.trim(),
-        password: document.getElementById('regPass').value
-    };
+    if (!form) return;
 
-    try {
-        const response = await fetch('http://localhost:4000/api/auth/crear-cuenta', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-        const res = await response.json();
+        const nombre = document.getElementById('nombre')?.value.trim();
+        const apellido = document.getElementById('apellido')?.value.trim();
+        const email = document.getElementById('email')?.value.trim();
+        const password = document.getElementById('password')?.value.trim();
 
-        if (response.ok) {
-            alert('¡Cuenta creada! Ahora puedes iniciar sesión.');
-            window.location.href = 'login.html';
-        } else {
-            alert('Error: ' + res.error);
+        if (!nombre || !apellido || !email || !password) {
+            alert('Completa todos los campos.');
+            return;
         }
-    } catch (err) {
-        console.error('Error en registro:', err);
-        alert('Problema de conexión con el servidor.');
-    }
+
+        try {
+            const response = await fetch('/api/auth/crear-cuenta', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombre,
+                    apellido,
+                    email,
+                    password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || 'No se pudo crear la cuenta');
+                return;
+            }
+
+            alert('Cuenta creada correctamente. Ahora inicia sesión.');
+            window.location.href = 'login.html';
+        } catch (error) {
+            console.error('Error registro:', error);
+            alert('Problema de conexión con el servidor.');
+        }
+    });
 });

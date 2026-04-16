@@ -100,9 +100,17 @@ function prepararModalCrear() {
 
     const titulo = document.getElementById('modalFormTitle');
     const submit = document.getElementById('btnSubmitReporte');
+    const modal = document.getElementById('modalReporte');
 
     if (titulo) titulo.innerText = 'Crear Nuevo Reporte';
-    if (submit) submit.innerText = 'Enviar Reporte';
+    if (submit) {
+        submit.innerText = 'Enviar Reporte';
+        submit.disabled = false;
+    }
+
+    if (modal) {
+        modal.scrollTop = 0;
+    }
 }
 
 function prepararModalEditar(reporte) {
@@ -111,40 +119,77 @@ function prepararModalEditar(reporte) {
     const modal = document.getElementById('modalReporte');
     const titulo = document.getElementById('modalFormTitle');
     const submit = document.getElementById('btnSubmitReporte');
+    const nombreImagen = document.getElementById('repImagenNombre');
 
     if (titulo) titulo.innerText = 'Editar Reporte';
-    if (submit) submit.innerText = 'Guardar cambios';
-
-    document.getElementById('repTitulo').value = reporte.titulo || '';
-    document.getElementById('repCategoria').value = reporte.categoria || 'Otros';
-    document.getElementById('repUbicacion').value = reporte.ubicacion || '';
-    document.getElementById('repDescripcion').value = reporte.descripcion || '';
-
-    const preview = document.getElementById('previewImagen');
-    if (preview && reporte.imagen) {
-        preview.src = reporte.imagen;
-        preview.style.display = 'block';
+    if (submit) {
+        submit.innerText = 'Guardar cambios';
+        submit.disabled = false;
     }
 
-    modal.classList.add('active');
-document.body.style.overflow = 'hidden';
-modal.scrollTop = 0;
+    const inputTitulo = document.getElementById('repTitulo');
+    const inputCategoria = document.getElementById('repCategoria');
+    const inputUbicacion = document.getElementById('repUbicacion');
+    const inputDescripcion = document.getElementById('repDescripcion');
+    const preview = document.getElementById('previewImagen');
+
+    if (inputTitulo) inputTitulo.value = reporte.titulo || '';
+    if (inputCategoria) inputCategoria.value = reporte.categoria || 'Otros';
+    if (inputUbicacion) inputUbicacion.value = reporte.ubicacion || '';
+    if (inputDescripcion) inputDescripcion.value = reporte.descripcion || '';
+
+    if (preview) {
+        if (reporte.imagen) {
+            preview.src = reporte.imagen;
+            preview.style.display = 'block';
+            if (nombreImagen) nombreImagen.innerText = 'Imagen actual del reporte';
+        } else {
+            preview.src = '';
+            preview.style.display = 'none';
+            if (nombreImagen) nombreImagen.innerText = 'Ningún archivo seleccionado';
+        }
+    }
+
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        modal.scrollTop = 0;
+    }
 }
 
 function limpiarFormularioReporte() {
     const form = document.getElementById('formReporte');
+    const preview = document.getElementById('previewImagen');
+    const nombre = document.getElementById('repImagenNombre');
+    const titulo = document.getElementById('modalFormTitle');
+    const submit = document.getElementById('btnSubmitReporte');
+    const inputImagen = document.getElementById('repImagen');
+
+    editReportId = null;
+
     if (form) form.reset();
 
-    const preview = document.getElementById('previewImagen');
+    if (inputImagen) {
+        inputImagen.value = '';
+    }
+
     if (preview) {
         preview.src = '';
         preview.style.display = 'none';
     }
 
-    const nombre = document.getElementById('repImagenNombre');
-    if (nombre) nombre.innerText = 'Ningún archivo seleccionado';
+    if (nombre) {
+        nombre.innerText = 'Ningún archivo seleccionado';
+    }
 
-    prepararModalCrear();
+    if (titulo) {
+        titulo.innerText = 'Crear Nuevo Reporte';
+    }
+
+    if (submit) {
+        submit.innerText = 'Enviar Reporte';
+        submit.disabled = false;
+    }
 }
 
 function configurarPreviewImagen() {
@@ -162,6 +207,8 @@ function configurarPreviewImagen() {
         }
 
         if (!archivo) {
+            preview.src = '';
+            preview.style.display = 'none';
             return;
         }
 
@@ -252,7 +299,7 @@ function renderizarNotificaciones(notificaciones) {
 
     panel.appendChild(markAll);
 
-    notificaciones.forEach(n => {
+    notificaciones.forEach((n) => {
         const item = document.createElement('div');
         item.className = `notification-item ${n.leida ? '' : 'unread'}`;
 
@@ -286,7 +333,7 @@ async function obtenerReportes() {
         }
 
         reportesGlobal = reportes;
-        renderizarReportes(reportesGlobal);
+        aplicarFiltros();
     } catch (err) {
         console.error('Error cargando el foro:', err);
     }
@@ -299,7 +346,7 @@ function aplicarFiltros() {
     const texto = buscador ? buscador.value.trim().toLowerCase() : '';
     const estado = filtroEstado ? filtroEstado.value : '';
 
-    const filtrados = reportesGlobal.filter(reporte => {
+    const filtrados = reportesGlobal.filter((reporte) => {
         const coincideTexto =
             (reporte.titulo || '').toLowerCase().includes(texto) ||
             (reporte.categoria || '').toLowerCase().includes(texto) ||
@@ -319,7 +366,7 @@ function renderizarReportes(reportes) {
 
     contenedor.innerHTML = '';
 
-    reportes.forEach(reporte => {
+    reportes.forEach((reporte) => {
         const card = document.createElement('div');
         card.className = 'card-reporte';
 
@@ -374,9 +421,9 @@ function renderizarReportes(reportes) {
 
 function actualizarEstadisticas() {
     const total = reportesGlobal.length;
-    const pendientes = reportesGlobal.filter(r => r.estado === 'pendiente').length;
-    const enProceso = reportesGlobal.filter(r => r.estado === 'en proceso').length;
-    const solucionados = reportesGlobal.filter(r => r.estado === 'solucionado').length;
+    const pendientes = reportesGlobal.filter((r) => r.estado === 'pendiente').length;
+    const enProceso = reportesGlobal.filter((r) => r.estado === 'en proceso').length;
+    const solucionados = reportesGlobal.filter((r) => r.estado === 'solucionado').length;
 
     const statTotal = document.getElementById('statTotal');
     const statPendientes = document.getElementById('statPendientes');
@@ -401,6 +448,8 @@ function configurarFormularioReporte() {
         const ubicacionEl = document.getElementById('repUbicacion');
         const descripcionEl = document.getElementById('repDescripcion');
         const imagenEl = document.getElementById('repImagen');
+        const submitBtn = document.getElementById('btnSubmitReporte');
+        const modal = document.getElementById('modalReporte');
 
         const formData = new FormData();
         formData.append('titulo', tituloEl ? tituloEl.value.trim() : '');
@@ -412,10 +461,17 @@ function configurarFormularioReporte() {
             formData.append('imagen', imagenEl.files[0]);
         }
 
+        const eraEdicion = !!editReportId;
+
         try {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = eraEdicion ? 'Guardando...' : 'Enviando...';
+            }
+
             let response;
 
-            if (editReportId) {
+            if (eraEdicion) {
                 response = await fetch(`/api/reportes/${editReportId}`, {
                     method: 'PUT',
                     headers: {
@@ -434,26 +490,34 @@ function configurarFormularioReporte() {
 
             const resultado = await response.json();
 
-            if (response.ok) {
-                alert(editReportId ? 'Reporte actualizado con éxito.' : 'Reporte creado con éxito.');
-                limpiarFormularioReporte();
-
-                const modal = document.getElementById('modalReporte');
-                if (modal) modal.style.display = 'none';
-
-                await obtenerReportes();
-            } else {
+            if (!response.ok) {
                 alert('Error: ' + (resultado.error || 'No se pudo guardar el reporte'));
+                return;
             }
+
+            alert(eraEdicion ? 'Reporte actualizado con éxito.' : 'Reporte creado con éxito.');
+
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            limpiarFormularioReporte();
+            await obtenerReportes();
         } catch (err) {
             console.error('Error al enviar reporte:', err);
             alert('No se pudo enviar el reporte.');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = eraEdicion ? 'Guardar cambios' : 'Enviar Reporte';
+            }
         }
     });
 }
 
 function editarReporte(id) {
-    const reporte = reportesGlobal.find(r => Number(r.id) === Number(id));
+    const reporte = reportesGlobal.find((r) => Number(r.id) === Number(id));
     if (!reporte) return;
 
     prepararModalEditar(reporte);
@@ -493,7 +557,7 @@ function revisarModoEdicionDesdeURL() {
     if (!edit) return;
 
     const espera = setInterval(() => {
-        const reporte = reportesGlobal.find(r => Number(r.id) === Number(edit));
+        const reporte = reportesGlobal.find((r) => Number(r.id) === Number(edit));
         if (reporte) {
             clearInterval(espera);
             prepararModalEditar(reporte);

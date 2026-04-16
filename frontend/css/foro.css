@@ -498,24 +498,27 @@ header {
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
     z-index: 3000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    padding: 16px;
     overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.modal-overlay.active {
+    display: block;
 }
 
 .modal-container {
     background: var(--white);
     width: 100%;
     max-width: 620px;
-    max-height: calc(100vh - 40px);
+    min-height: auto;
+    max-height: none;
     border-radius: 24px;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: 0 28px 70px rgba(15, 23, 42, 0.25);
     animation: slideUp 0.26s ease-out;
     border: 1px solid rgba(226, 232, 240, 0.8);
-    display: flex;
-    flex-direction: column;
+    margin: 24px auto;
 }
 
 @keyframes slideUp {
@@ -535,7 +538,9 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0;
+    background: #fff;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
 }
 
 .modal-header h3 {
@@ -552,9 +557,7 @@ header {
 
 .modal-body {
     padding: 28px;
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
+    overflow: visible;
 }
 
 .modal-footer-custom {
@@ -563,8 +566,9 @@ header {
     justify-content: flex-end;
     gap: 12px;
     flex-wrap: wrap;
-    flex-shrink: 0;
-    background: inherit;
+    background: #fff;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
 }
 
 .form-label {
@@ -586,8 +590,8 @@ header {
 }
 
 .textarea-reporte {
-    height: 110px;
-    resize: none;
+    min-height: 110px;
+    resize: vertical;
 }
 
 .upload-area {
@@ -625,6 +629,64 @@ header {
     border-radius: 14px;
     margin-bottom: 18px;
     border: 1px solid #e2e8f0;
+}
+
+/* Modal responsive real */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 8px;
+    }
+
+    .modal-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 8px auto 24px auto;
+        border-radius: 18px;
+    }
+
+    .modal-header {
+        padding: 16px;
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-footer-custom {
+        padding: 0 16px 16px 16px;
+        flex-direction: column-reverse;
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
+    }
+
+    .modal-footer-custom .btn-primary,
+    .modal-footer-custom .btn-login {
+        width: 100%;
+    }
+
+    .preview-imagen {
+        max-height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-overlay {
+        padding: 6px;
+    }
+
+    .modal-container {
+        margin: 6px auto 20px auto;
+        border-radius: 16px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer-custom {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
 }
 
 /* Página perfil */

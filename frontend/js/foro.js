@@ -61,23 +61,37 @@ function configurarModal() {
     const btnCerrar = document.getElementById('btnCerrarModal');
     const btnX = document.getElementById('btnCerrarX');
 
-    if (btnAbrir && modal) {
-        btnAbrir.addEventListener('click', () => {
-            prepararModalCrear();
-            modal.style.display = 'flex';
-        });
-    }
+    if (!modal) return;
+
+    const abrir = () => {
+        prepararModalCrear();
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        modal.scrollTop = 0;
+    };
 
     const cerrar = () => {
-        if (modal) modal.style.display = 'none';
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
         limpiarFormularioReporte();
     };
 
-    if (btnCerrar) btnCerrar.addEventListener('click', cerrar);
-    if (btnX) btnX.addEventListener('click', cerrar);
+    if (btnAbrir) {
+        btnAbrir.addEventListener('click', abrir);
+    }
+
+    if (btnCerrar) {
+        btnCerrar.addEventListener('click', cerrar);
+    }
+
+    if (btnX) {
+        btnX.addEventListener('click', cerrar);
+    }
 
     window.addEventListener('click', (event) => {
-        if (event.target === modal) cerrar();
+        if (event.target === modal) {
+            cerrar();
+        }
     });
 }
 
@@ -112,7 +126,9 @@ function prepararModalEditar(reporte) {
         preview.style.display = 'block';
     }
 
-    modal.style.display = 'flex';
+    modal.classList.add('active');
+document.body.style.overflow = 'hidden';
+modal.scrollTop = 0;
 }
 
 function limpiarFormularioReporte() {

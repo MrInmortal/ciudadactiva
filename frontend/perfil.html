@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi perfil - CiudadActiva</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/foro.css">
+</head>
+<body class="profile-page">
+
+    <div class="profile-shell">
+        <div class="profile-topbar">
+            <div class="logo-container">
+                <img src="img/logo.png" alt="CiudadActiva" class="icon">
+                <div>
+                    <strong>CiudadActiva</strong>
+                    <small>Mi perfil</small>
+                </div>
+            </div>
+
+            <div class="auth-btns">
+                <button class="theme-toggle-btn" type="button" data-theme-toggle>🌙 Modo oscuro</button>
+                <a href="foro.html" class="btn-login">Volver al foro</a>
+                <button class="btn-primary" type="button" onclick="cerrarSesion()">Cerrar sesión</button>
+            </div>
+        </div>
+
+        <div class="profile-layout">
+            <aside class="profile-card">
+                <div class="profile-avatar-wrap">
+                    <img id="profileAvatar" class="profile-avatar-large" alt="Foto de perfil" style="display:none;">
+                    <div id="profileAvatarFallback" class="profile-avatar-fallback">U</div>
+                    <div id="profileName" class="profile-name">Usuario</div>
+                    <div id="profileRole" class="profile-role">Ciudadano</div>
+                </div>
+
+                <div class="profile-meta">
+                    <div class="profile-meta-item">
+                        <small>Correo</small>
+                        <span id="infoEmail">-</span>
+                    </div>
+
+                    <div class="profile-meta-item">
+                        <small>Teléfono</small>
+                        <span id="infoTelefono">-</span>
+                    </div>
+
+                    <div class="profile-meta-item">
+                        <small>Registro</small>
+                        <span id="infoRegistro">-</span>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="profile-main">
+                <section class="profile-section">
+                    <h3>Editar perfil</h3>
+
+                    <form id="formPerfil">
+                        <div class="profile-grid">
+                            <div>
+                                <label class="form-label" for="nombre">Nombre</label>
+                                <input class="profile-input" id="nombre" type="text" required>
+                            </div>
+
+                            <div>
+                                <label class="form-label" for="apellido">Apellido</label>
+                                <input class="profile-input" id="apellido" type="text" required>
+                            </div>
+
+                            <div>
+                                <label class="form-label" for="email">Correo</label>
+                                <input class="profile-input" id="email" type="email" required>
+                            </div>
+
+                            <div>
+                                <label class="form-label" for="telefono">Teléfono</label>
+                                <input class="profile-input" id="telefono" type="text">
+                            </div>
+
+                            <div class="profile-grid-full">
+                                <label class="form-label" for="password">Nueva contraseña</label>
+                                <input class="profile-input" id="password" type="password" placeholder="Déjala vacía si no quieres cambiarla">
+                            </div>
+
+                            <div class="profile-grid-full">
+                                <label class="form-label" for="foto_perfil">Foto de perfil</label>
+                                <div class="custom-file-box">
+                                    <input class="hidden-file-input" id="foto_perfil" type="file" accept="image/*">
+                                    <label for="foto_perfil" class="custom-file-button">Seleccionar foto</label>
+                                    <span class="custom-file-name">Elige una imagen</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-actions">
+                            <button type="submit" class="btn-primary">Guardar cambios</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="profile-section">
+                    <div class="history-header">
+                        <h3>Historial de reportes</h3>
+                        <button class="btn-outline-history" type="button">
+                            Totales: <span id="totalReportesPerfil">0</span> / Solucionados: <span id="solucionadosPerfil">0</span>
+                        </button>
+                    </div>
+
+                    <div id="reportHistory" class="report-history"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/perfil.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Autoridades</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/foro.css">
+    <link rel="stylesheet" href="css/authority.css">
+</head>
+<body class="foro-page">
+    <div class="authority-layout">
+        <div id="authoritySidebarMount"></div>
+
+        <main class="authority-main">
+            <div id="authorityMobileTop"></div>
+
+            <h1 class="authority-page-title">Dashboard</h1>
+            <p class="authority-page-subtitle">Resumen general del sistema, actividad y métricas dinámicas.</p>
+
+            <section class="dashboard-stats">
+                <div class="stat-box">
+                    <small>Total de reportes</small>
+                    <h2 id="dashTotal">0</h2>
+                </div>
+                <div class="stat-box stat-pendiente">
+                    <small>Pendientes</small>
+                    <h2 id="dashPendientes">0</h2>
+                </div>
+                <div class="stat-box stat-proceso">
+                    <small>En proceso</small>
+                    <h2 id="dashProceso">0</h2>
+                </div>
+                <div class="stat-box stat-solucionado">
+                    <small>Solucionados</small>
+                    <h2 id="dashSolucionados">0</h2>
+                </div>
+            </section>
+
+            <section class="authority-overview-grid">
+                <div class="authority-panel">
+                    <h3>Reportes por categoría</h3>
+                    <div id="chartCategorias" class="chart-list"></div>
+                </div>
+
+                <div class="authority-panel">
+                    <h3>Actividad por día</h3>
+                    <div id="chartDias" class="chart-list"></div>
+                </div>
+
+                <div class="authority-panel">
+                    <h3>Zonas con más reportes</h3>
+                    <div id="chartUbicaciones" class="chart-list"></div>
+                </div>
+
+                <div class="authority-panel">
+                    <h3>Usuarios más activos</h3>
+                    <div id="chartUsuarios" class="chart-list"></div>
+                </div>
+            </section>
+
+            <section class="authority-panel">
+                <h3>Resumen rápido</h3>
+                <div class="mini-kpi-grid">
+                    <div class="mini-kpi">
+                        <span>Estado más frecuente</span>
+                        <b id="quickEstado">-</b>
+                    </div>
+                    <div class="mini-kpi">
+                        <span>Categoría principal</span>
+                        <b id="quickCategoria">-</b>
+                    </div>
+                    <div class="mini-kpi">
+                        <span>Ubicación más reportada</span>
+                        <b id="quickUbicacion">-</b>
+                    </div>
+                    <div class="mini-kpi">
+                        <span>Usuario más activo</span>
+                        <b id="quickUsuario">-</b>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/authority-common.js"></script>
+    <script src="js/dashboard-home.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Panel de Autoridades</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/foro.css">
+    <link rel="stylesheet" href="css/authority.css">
+</head>
+<body class="authority-app">
+    <div class="authority-layout">
+        <aside id="authoritySidebarMount"></aside>
+
+        <main class="authority-main">
+            <div id="authorityMobileTop"></div>
+
+            <section class="authority-page-header">
+                <div>
+                    <h1 class="authority-page-title">Reportes</h1>
+                    <p class="authority-page-subtitle">
+                        Gestiona estados, respuestas, ediciones y eliminación de reportes.
+                    </p>
+                </div>
+
+                <div class="authority-header-actions">
+                    <input
+                        type="text"
+                        id="reportSearch"
+                        class="search-input authority-search-input"
+                        placeholder="Buscar por título, ubicación o autor..."
+                    >
+                    <select id="reportEstadoFilter" class="filter-select authority-filter-select">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en proceso">En proceso</option>
+                        <option value="solucionado">Solucionado</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="authority-toolbar-cards">
+                <div class="authority-mini-stat">
+                    <span>Total visibles</span>
+                    <b id="reportVisibleCount">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Pendientes</span>
+                    <b id="reportPendCount">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>En proceso</span>
+                    <b id="reportProcessCount">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Solucionados</span>
+                    <b id="reportSolvedCount">0</b>
+                </div>
+            </section>
+
+            <section class="authority-report-board">
+                <div class="authority-report-board-top">
+                    <div class="authority-report-board-title">Listado de reportes</div>
+                    <div class="authority-report-board-subtitle">Vista tipo panel para revisar, editar y responder.</div>
+                </div>
+
+                <div class="authority-report-table">
+                    <div class="authority-report-table-head">
+                        <div>Nombre</div>
+                        <div>Categoría</div>
+                        <div>Estado</div>
+                        <div>Ubicación</div>
+                        <div>Creado por</div>
+                        <div>Fecha</div>
+                        <div>Acciones</div>
+                    </div>
+
+                    <div id="reportList" class="authority-report-table-body"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="editReportModal" class="authority-modal-overlay">
+        <div class="authority-modal">
+            <div class="authority-modal-header">
+                <div>
+                    <h3>Editar reporte</h3>
+                    <p>Gestiona información, estado y respuesta oficial.</p>
+                </div>
+                <button type="button" class="authority-modal-close" id="closeEditReportModal">×</button>
+            </div>
+
+            <div id="editReportModalBody" class="authority-modal-body"></div>
+        </div>
+    </div>
+
+    <script src="js/authority-common.js"></script>
+    <script src="js/dashboard-reportes.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

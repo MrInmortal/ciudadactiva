@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de roles - Panel de Autoridades</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/foro.css">
+    <link rel="stylesheet" href="css/authority.css">
+</head>
+<body class="authority-app">
+    <div class="authority-layout">
+        <aside id="authoritySidebarMount"></aside>
+
+        <main class="authority-main">
+            <div id="authorityMobileTop"></div>
+
+            <section class="authority-page-header">
+                <div>
+                    <h1 class="authority-page-title">Gestión de roles</h1>
+                    <p class="authority-page-subtitle">
+                        Solo administradores pueden modificar roles del sistema.
+                    </p>
+                </div>
+
+                <div class="authority-header-actions">
+                    <input
+                        type="text"
+                        id="userSearch"
+                        class="search-input authority-search-input"
+                        placeholder="Buscar por nombre o correo..."
+                    >
+                </div>
+            </section>
+
+            <section class="authority-toolbar-cards">
+                <div class="authority-mini-stat">
+                    <span>Total de usuarios</span>
+                    <b id="rolesTotalUsuarios">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Ciudadanos</span>
+                    <b id="rolesCiudadanos">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Autoridades</span>
+                    <b id="rolesAutoridades">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Admins</span>
+                    <b id="rolesAdmins">0</b>
+                </div>
+            </section>
+
+            <section class="roles-board">
+                <div class="roles-board-top">
+                    <div class="roles-board-title">Usuarios del sistema</div>
+                    <div class="roles-board-subtitle">
+                        Busca usuarios y cambia sus permisos desde una tabla centralizada.
+                    </div>
+                </div>
+
+                <div class="roles-table">
+                    <div class="roles-table-head">
+                        <div>Usuario</div>
+                        <div>Correo</div>
+                        <div>Rol</div>
+                        <div>Teléfono</div>
+                        <div>Registro</div>
+                    </div>
+
+                    <div id="rolesList" class="roles-table-body"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/authority-common.js"></script>
+    <script src="js/dashboard-roles.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

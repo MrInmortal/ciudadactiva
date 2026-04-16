@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - CiudadActiva</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <a href="index.html" class="back-link">← Volver al inicio</a>
+        <div class="auth-box">
+            <h2>Crear una cuenta</h2>
+            <p>Únete a la plataforma oficial de tu ciudad</p>
+            
+            <form id="formRegistro">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="regNombre" style="display:none">Nombre</label>
+                        <input type="text" id="regNombre" placeholder="Nombre" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="regApellido" style="display:none">Apellido</label>
+                        <input type="text" id="regApellido" placeholder="Apellido" required>
+                    </div>
+                </div>
+
+                <label for="regEmail" style="display:none">Correo electrónico</label>
+                <input type="email" id="regEmail" placeholder="Correo electrónico" required>
+                
+                <div class="password-wrapper">
+                    <label for="regPass" style="display:none">Contraseña</label>
+                    <input type="password" id="regPass" placeholder="Contraseña" required>
+                    <span id="togglePass" class="eye-icon">👁️</span>
+                </div>
+
+                <div class="captcha-sim">
+                    <input type="checkbox" id="captchaCheck" title="Confirmar que no es un robot" required>
+                    <label for="captchaCheck">No soy un robot</label>
+                </div>
+
+                <button type="submit" class="btn-primary full-width">Registrarse ahora</button>
+            </form>
+            <p class="auth-footer">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+        </div>
+    </div>
+    <script src="js/registro.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

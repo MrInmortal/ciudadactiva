@@ -63,6 +63,81 @@ function leerUsuarioCliente(req) {
     };
 }
 
+async function obtenerUsuarioPorId(id) {
+    if (!id) return null;
+
+    const result = await pool.query(
+        `SELECT id, nombre, apellido, email, rol
+         FROM usuarios
+         WHERE id = $1`,
+        [id]
+    );
+
+    return result.rows[0] || null;
+}
+
+async function registrarLogSistema({
+    actorUsuarioId = null,
+    actorNombre = null,
+    actorEmail = null,
+    actorRol = null,
+    accion,
+    entidad,
+    entidadId = null,
+    descripcion,
+    datos = null
+}) {
+    try {
+        await pool.query(
+            `INSERT INTO logs_sistema (
+                actor_usuario_id,
+                actor_nombre,
+                actor_email,
+                actor_rol,
+                accion,
+                entidad,
+                entidad_id,
+                descripcion,
+                datos
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+            [
+                actorUsuarioId,
+                actorNombre,
+                actorEmail,
+                actorRol,
+                accion,
+                entidad,
+                entidadId,
+                descripcion,
+                datos ? JSON.stringify(datos) : null
+            ]
+        );
+    } catch (err) {
+        console.error('Error registrando log:', err.message);
+    }
+}
+
+async function registrarLogDesdeRequest(req, payload) {
+    try {
+        const actor = leerUsuarioCliente(req);
+        let usuario = null;
+
+        if (actor.id) {
+            usuario = await obtenerUsuarioPorId(actor.id);
+        }
+
+        await registrarLogSistema({
+            actorUsuarioId: usuario?.id || actor.id || null,
+            actorNombre: usuario ? `${usuario.nombre} ${usuario.apellido || ''}`.trim() : 'Sistema',
+            actorEmail: usuario?.email || null,
+            actorRol: usuario?.rol || actor.rol || null,
+            ...payload
+        });
+    } catch (err) {
+        console.error('Error registrando log desde request:', err.message);
+    }
+}
+
 function verificarRolAutoridad(req, res, next) {
     const actor = leerUsuarioCliente(req);
 
@@ -157,6 +232,10 @@ app.get('/dashboard-roles', (req, res) => {
     res.sendFile(path.join(__dirname, '../../frontend/dashboard-roles.html'));
 });
 
+app.get('/dashboard-logs', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../frontend/dashboard-logs.html'));
+});
+
 // =========================
 // AUTH
 // =========================
@@ -186,9 +265,23 @@ app.post('/api/auth/crear-cuenta', async (req, res) => {
             [nombre, apellido, email, hash]
         );
 
+        const nuevoUsuario = result.rows[0];
+
+        await registrarLogSistema({
+            actorUsuarioId: nuevoUsuario.id,
+            actorNombre: `${nuevoUsuario.nombre} ${nuevoUsuario.apellido || ''}`.trim(),
+            actorEmail: nuevoUsuario.email,
+            actorRol: nuevoUsuario.rol,
+            accion: 'crear_cuenta',
+            entidad: 'usuario',
+            entidadId: nuevoUsuario.id,
+            descripcion: `Se creó la cuenta del usuario ${nuevoUsuario.email}.`,
+            datos: { usuario_id: nuevoUsuario.id, email: nuevoUsuario.email }
+        });
+
         res.status(201).json({
             mensaje: 'Usuario registrado con éxito',
-            user: result.rows[0]
+            user: nuevoUsuario
         });
     } catch (err) {
         console.error('Error en registro:', err.message);
@@ -313,6 +406,14 @@ app.put('/api/usuarios/:id', upload.single('foto_perfil'), async (req, res) => {
             );
         }
 
+        await registrarLogDesdeRequest(req, {
+            accion: 'editar_perfil',
+            entidad: 'usuario',
+            entidadId: Number(id),
+            descripcion: `Se actualizó el perfil del usuario ${email}.`,
+            datos: { usuario_id: Number(id), email, telefono }
+        });
+
         res.json({
             mensaje: 'Perfil actualizado correctamente',
             user: result.rows[0]
@@ -410,6 +511,110 @@ app.put('/api/notificaciones/usuario/:usuarioId/leidas', async (req, res) => {
 });
 
 // =========================
+// COMENTARIOS
+// =========================
+app.get('/api/reportes/:id/comentarios', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query(
+            `SELECT
+                c.id,
+                c.reporte_id,
+                c.usuario_id,
+                c.comentario,
+                c.fecha_creacion,
+                u.nombre,
+                u.apellido,
+                u.rol,
+                u.foto_perfil
+             FROM comentarios c
+             JOIN usuarios u ON c.usuario_id = u.id
+             WHERE c.reporte_id = $1
+             ORDER BY c.fecha_creacion ASC, c.id ASC`,
+            [id]
+        );
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error al obtener comentarios:', err.message);
+        res.status(500).json({ error: 'No se pudieron cargar los comentarios' });
+    }
+});
+
+app.post('/api/reportes/:id/comentarios', async (req, res) => {
+    const { id } = req.params;
+    const { comentario } = req.body;
+    const actor = leerUsuarioCliente(req);
+
+    if (!actor.id) {
+        return res.status(401).json({ error: 'Usuario no identificado' });
+    }
+
+    if (!comentario || !comentario.trim()) {
+        return res.status(400).json({ error: 'El comentario no puede estar vacío' });
+    }
+
+    try {
+        const reporteRes = await pool.query(
+            `SELECT id, usuario_id, titulo
+             FROM reportes
+             WHERE id = $1`,
+            [id]
+        );
+
+        if (reporteRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Reporte no encontrado' });
+        }
+
+        const reporte = reporteRes.rows[0];
+
+        const insert = await pool.query(
+            `INSERT INTO comentarios (reporte_id, usuario_id, comentario)
+             VALUES ($1, $2, $3)
+             RETURNING *`,
+            [id, actor.id, comentario.trim()]
+        );
+
+        const actorUser = await obtenerUsuarioPorId(actor.id);
+
+        await registrarLogSistema({
+            actorUsuarioId: actorUser?.id || actor.id,
+            actorNombre: actorUser ? `${actorUser.nombre} ${actorUser.apellido || ''}`.trim() : 'Usuario',
+            actorEmail: actorUser?.email || null,
+            actorRol: actorUser?.rol || actor.rol,
+            accion: 'crear_comentario',
+            entidad: 'comentario',
+            entidadId: insert.rows[0].id,
+            descripcion: `Se comentó el reporte "${reporte.titulo}".`,
+            datos: {
+                reporte_id: Number(id),
+                comentario_id: insert.rows[0].id,
+                comentario: comentario.trim()
+            }
+        });
+
+        if (Number(reporte.usuario_id) !== Number(actor.id)) {
+            await crearNotificacion(
+                reporte.usuario_id,
+                'comentario',
+                'Nuevo comentario en tu reporte',
+                `Han comentado tu reporte "${reporte.titulo}".`,
+                Number(id)
+            );
+        }
+
+        res.status(201).json({
+            mensaje: 'Comentario creado correctamente',
+            comentario: insert.rows[0]
+        });
+    } catch (err) {
+        console.error('Error al crear comentario:', err.message);
+        res.status(500).json({ error: 'No se pudo crear el comentario' });
+    }
+});
+
+// =========================
 // REPORTES
 // =========================
 app.get('/api/reportes', async (req, res) => {
@@ -452,7 +657,7 @@ app.post('/api/reportes', upload.single('imagen'), async (req, res) => {
 
     try {
         const usuarioExiste = await pool.query(
-            'SELECT id FROM usuarios WHERE id = $1',
+            'SELECT id, nombre, apellido, email, rol FROM usuarios WHERE id = $1',
             [usuario_id]
         );
 
@@ -460,6 +665,7 @@ app.post('/api/reportes', upload.single('imagen'), async (req, res) => {
             return res.status(400).json({ error: 'El usuario del reporte no existe' });
         }
 
+        const usuario = usuarioExiste.rows[0];
         const imagenPath = req.file ? `/uploads/${req.file.filename}` : null;
 
         const result = await pool.query(
@@ -468,6 +674,18 @@ app.post('/api/reportes', upload.single('imagen'), async (req, res) => {
              RETURNING *`,
             [usuario_id, titulo, descripcion, ubicacion, categoria || 'Otros', imagenPath]
         );
+
+        await registrarLogSistema({
+            actorUsuarioId: usuario.id,
+            actorNombre: `${usuario.nombre} ${usuario.apellido || ''}`.trim(),
+            actorEmail: usuario.email,
+            actorRol: usuario.rol,
+            accion: 'crear_reporte',
+            entidad: 'reporte',
+            entidadId: result.rows[0].id,
+            descripcion: `Se creó el reporte "${titulo}".`,
+            datos: { reporte_id: result.rows[0].id, titulo, categoria, ubicacion }
+        });
 
         res.status(201).json({
             mensaje: 'Reporte creado con éxito',
@@ -516,6 +734,14 @@ app.put('/api/reportes/:id', upload.single('imagen'), async (req, res) => {
             [titulo, descripcion, ubicacion, categoria || 'Otros', nuevaImagen, id]
         );
 
+        await registrarLogDesdeRequest(req, {
+            accion: 'editar_reporte',
+            entidad: 'reporte',
+            entidadId: Number(id),
+            descripcion: `Se editó el reporte "${titulo}".`,
+            datos: { reporte_id: Number(id), titulo, categoria, ubicacion }
+        });
+
         if (permiso.actor.id !== reporteActual.usuario_id) {
             await crearNotificacion(
                 reporteActual.usuario_id,
@@ -556,6 +782,14 @@ app.delete('/api/reportes/:id', async (req, res) => {
 
         await pool.query(`DELETE FROM reportes WHERE id = $1`, [id]);
 
+        await registrarLogDesdeRequest(req, {
+            accion: 'eliminar_reporte',
+            entidad: 'reporte',
+            entidadId: Number(id),
+            descripcion: `Se eliminó el reporte "${reporteActual.titulo}".`,
+            datos: { reporte_id: Number(id), titulo: reporteActual.titulo }
+        });
+
         if (permiso.actor.id !== reporteActual.usuario_id) {
             await crearNotificacion(
                 reporteActual.usuario_id,
@@ -585,7 +819,7 @@ app.put('/api/reportes/:id/estado', verificarRolAutoridad, async (req, res) => {
 
     try {
         const previo = await pool.query(
-            `SELECT id, usuario_id, titulo
+            `SELECT id, usuario_id, titulo, estado
              FROM reportes
              WHERE id = $1`,
             [id]
@@ -604,6 +838,14 @@ app.put('/api/reportes/:id/estado', verificarRolAutoridad, async (req, res) => {
              RETURNING *`,
             [estado, id]
         );
+
+        await registrarLogDesdeRequest(req, {
+            accion: 'cambiar_estado_reporte',
+            entidad: 'reporte',
+            entidadId: Number(id),
+            descripcion: `Se cambió el estado del reporte "${reporteActual.titulo}" de "${reporteActual.estado}" a "${estado}".`,
+            datos: { reporte_id: Number(id), estado_anterior: reporteActual.estado, estado_nuevo: estado }
+        });
 
         await crearNotificacion(
             reporteActual.usuario_id,
@@ -654,6 +896,14 @@ app.put('/api/reportes/:id/respuesta', verificarRolAutoridad, async (req, res) =
              RETURNING *`,
             [respuesta.trim(), id]
         );
+
+        await registrarLogDesdeRequest(req, {
+            accion: 'responder_reporte',
+            entidad: 'reporte',
+            entidadId: Number(id),
+            descripcion: `Se respondió el reporte "${reporteActual.titulo}".`,
+            datos: { reporte_id: Number(id), respuesta: respuesta.trim() }
+        });
 
         await crearNotificacion(
             reporteActual.usuario_id,
@@ -762,7 +1012,7 @@ app.get('/api/dashboard/reportes', verificarRolAutoridad, async (req, res) => {
 });
 
 // =========================
-// ADMIN - ROLES
+// ADMIN - ROLES / USUARIOS / LOGS
 // =========================
 app.get('/api/admin/usuarios', verificarRolAdmin, async (req, res) => {
     try {
@@ -790,6 +1040,19 @@ app.put('/api/admin/usuarios/:id/rol', verificarRolAdmin, async (req, res) => {
     }
 
     try {
+        const actual = await pool.query(
+            `SELECT id, nombre, apellido, email, rol
+             FROM usuarios
+             WHERE id = $1`,
+            [id]
+        );
+
+        if (actual.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        const usuarioActual = actual.rows[0];
+
         const result = await pool.query(
             `UPDATE usuarios
              SET rol = $1
@@ -798,9 +1061,18 @@ app.put('/api/admin/usuarios/:id/rol', verificarRolAdmin, async (req, res) => {
             [rol, id]
         );
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
+        await registrarLogDesdeRequest(req, {
+            accion: 'cambiar_rol',
+            entidad: 'usuario',
+            entidadId: Number(id),
+            descripcion: `Se cambió el rol del usuario ${usuarioActual.email} de "${usuarioActual.rol}" a "${rol}".`,
+            datos: {
+                usuario_id: Number(id),
+                email: usuarioActual.email,
+                rol_anterior: usuarioActual.rol,
+                rol_nuevo: rol
+            }
+        });
 
         await crearNotificacion(
             Number(id),
@@ -817,6 +1089,72 @@ app.put('/api/admin/usuarios/:id/rol', verificarRolAdmin, async (req, res) => {
     } catch (err) {
         console.error('Error al actualizar rol:', err.message);
         res.status(500).json({ error: 'No se pudo actualizar el rol' });
+    }
+});
+
+app.delete('/api/admin/usuarios/:id', verificarRolAdmin, async (req, res) => {
+    const { id } = req.params;
+    const actor = leerUsuarioCliente(req);
+
+    if (Number(actor.id) === Number(id)) {
+        return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta de administrador' });
+    }
+
+    try {
+        const actual = await pool.query(
+            `SELECT id, nombre, apellido, email, rol
+             FROM usuarios
+             WHERE id = $1`,
+            [id]
+        );
+
+        if (actual.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        const usuario = actual.rows[0];
+
+        await pool.query(`DELETE FROM usuarios WHERE id = $1`, [id]);
+
+        await registrarLogDesdeRequest(req, {
+            accion: 'eliminar_cuenta',
+            entidad: 'usuario',
+            entidadId: Number(id),
+            descripcion: `Se eliminó la cuenta del usuario ${usuario.email}.`,
+            datos: { usuario_id: Number(id), email: usuario.email, rol: usuario.rol }
+        });
+
+        res.json({ mensaje: 'Cuenta eliminada correctamente' });
+    } catch (err) {
+        console.error('Error al eliminar usuario:', err.message);
+        res.status(500).json({ error: 'No se pudo eliminar la cuenta' });
+    }
+});
+
+app.get('/api/admin/logs', verificarRolAdmin, async (req, res) => {
+    const { search = '', accion = '', entidad = '', limit = 100 } = req.query;
+
+    try {
+        const result = await pool.query(
+            `SELECT *
+             FROM logs_sistema
+             WHERE
+                ($1 = '' OR
+                    LOWER(COALESCE(actor_nombre, '')) LIKE LOWER($2) OR
+                    LOWER(COALESCE(actor_email, '')) LIKE LOWER($2) OR
+                    LOWER(COALESCE(descripcion, '')) LIKE LOWER($2)
+                )
+                AND ($3 = '' OR accion = $3)
+                AND ($4 = '' OR entidad = $4)
+             ORDER BY fecha_creacion DESC, id DESC
+             LIMIT $5`,
+            [search, `%${search}%`, accion, entidad, Number(limit)]
+        );
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error al obtener logs:', err.message);
+        res.status(500).json({ error: 'No se pudieron cargar los logs' });
     }
 });
 

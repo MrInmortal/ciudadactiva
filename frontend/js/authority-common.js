@@ -1,57 +1,63 @@
 function getCurrentAuthorityUser() {
-  return JSON.parse(localStorage.getItem("user"));
+    return JSON.parse(localStorage.getItem('user'));
 }
 
 function requireAuthority() {
-  const user = getCurrentAuthorityUser();
+    const user = getCurrentAuthorityUser();
 
-  if (!user || (user.rol !== "autoridad" && user.rol !== "admin")) {
-    alert("No tienes permisos para entrar aquí.");
-    window.location.href = "foro.html";
-    return null;
-  }
+    if (!user || (user.rol !== 'autoridad' && user.rol !== 'admin')) {
+        alert('No tienes permisos para entrar aquí.');
+        window.location.href = 'foro.html';
+        return null;
+    }
 
-  return user;
+    return user;
 }
 
 function requireAdmin() {
-  const user = getCurrentAuthorityUser();
+    const user = getCurrentAuthorityUser();
 
-  if (!user || user.rol !== "admin") {
-    alert("Solo un administrador puede entrar aquí.");
-    window.location.href = "dashboard-autoridad.html";
-    return null;
-  }
+    if (!user || user.rol !== 'admin') {
+        alert('Solo un administrador puede entrar aquí.');
+        window.location.href = 'dashboard-autoridad.html';
+        return null;
+    }
 
-  return user;
+    return user;
 }
 
 function renderAuthoritySidebar(activePage) {
-  const user = getCurrentAuthorityUser();
-  if (!user) return;
+    const user = getCurrentAuthorityUser();
+    if (!user) return;
 
-  const rolesLink =
-    user.rol === "admin"
-      ? `<a href="dashboard-roles.html" class="${activePage === "roles" ? "active" : ""}">
+    const rolesLink = user.rol === 'admin'
+        ? `<a href="dashboard-roles.html" class="${activePage === 'roles' ? 'active' : ''}">
                 <span class="nav-icon">👥</span>
                 <span>Roles</span>
            </a>`
-      : "";
+        : '';
 
-  const mount = document.getElementById("authoritySidebarMount");
-  if (!mount) return;
+    const logsLink = user.rol === 'admin'
+        ? `<a href="dashboard-logs.html" class="${activePage === 'logs' ? 'active' : ''}">
+                <span class="nav-icon">🧾</span>
+                <span>Logs</span>
+           </a>`
+        : '';
 
-  mount.className = "authority-sidebar-shell";
+    const mount = document.getElementById('authoritySidebarMount');
+    if (!mount) return;
 
-  mount.innerHTML = `
+    mount.className = 'authority-sidebar-shell';
+
+    mount.innerHTML = `
         <div class="authority-mobile-overlay" id="authorityMobileOverlay"></div>
 
         <aside class="authority-sidebar" id="authoritySidebar">
             <div class="authority-sidebar-top">
                 <div class="authority-brand">
-<div class="authority-brand-logo">
-    <img src="/img/redi.png" alt="CiudadActiva">
-</div>
+                    <div class="authority-brand-logo">
+                        <img src="/img/redi.png" alt="CiudadActiva">
+                    </div>
                     <div>
                         <strong>CiudadActiva</strong>
                         <small>Panel de Autoridades</small>
@@ -65,28 +71,29 @@ function renderAuthoritySidebar(activePage) {
 
             <div class="authority-userbox">
                 <div class="authority-user-avatar">
-                    ${(user.nombre || "U").charAt(0).toUpperCase()}
+                    ${(user.nombre || 'U').charAt(0).toUpperCase()}
                 </div>
                 <div class="authority-userbox-text">
-                    <div class="authority-userbox-name">${escapeHTML(user.nombre)} ${escapeHTML(user.apellido || "")}</div>
-                    <div class="authority-userbox-role">${capitalizar(user.rol || "ciudadano")}</div>
+                    <div class="authority-userbox-name">${escapeHTML(user.nombre)} ${escapeHTML(user.apellido || '')}</div>
+                    <div class="authority-userbox-role">${capitalizar(user.rol || 'ciudadano')}</div>
                 </div>
             </div>
 
             <div class="authority-section-label">Navegación</div>
 
             <nav class="authority-nav">
-                <a href="dashboard-autoridad.html" class="${activePage === "dashboard" ? "active" : ""}">
+                <a href="dashboard-autoridad.html" class="${activePage === 'dashboard' ? 'active' : ''}">
                     <span class="nav-icon">📊</span>
                     <span>Dashboard</span>
                 </a>
 
-                <a href="dashboard-reportes.html" class="${activePage === "reportes" ? "active" : ""}">
+                <a href="dashboard-reportes.html" class="${activePage === 'reportes' ? 'active' : ''}">
                     <span class="nav-icon">📝</span>
                     <span>Reportes</span>
                 </a>
 
                 ${rolesLink}
+                ${logsLink}
             </nav>
 
             <div class="authority-sidebar-spacer"></div>
@@ -100,14 +107,14 @@ function renderAuthoritySidebar(activePage) {
         </aside>
     `;
 
-  inicializarSidebarMovil();
+    inicializarSidebarMovil();
 }
 
 function renderAuthorityMobileTop(title) {
-  const mount = document.getElementById("authorityMobileTop");
-  if (!mount) return;
+    const mount = document.getElementById('authorityMobileTop');
+    if (!mount) return;
 
-  mount.innerHTML = `
+    mount.innerHTML = `
         <div class="authority-mobile-top">
             <div class="authority-mobile-left">
                 <button class="authority-burger" id="authorityBurger" type="button" aria-label="Abrir menú">
@@ -123,70 +130,84 @@ function renderAuthorityMobileTop(title) {
         </div>
     `;
 
-  const burger = document.getElementById("authorityBurger");
-  if (burger) {
-    burger.addEventListener("click", abrirSidebarMovil);
-  }
+    const burger = document.getElementById('authorityBurger');
+    if (burger) {
+        burger.addEventListener('click', abrirSidebarMovil);
+    }
 }
 
 function inicializarSidebarMovil() {
-  const closeBtn = document.getElementById("authoritySidebarClose");
-  const overlay = document.getElementById("authorityMobileOverlay");
+    const closeBtn = document.getElementById('authoritySidebarClose');
+    const overlay = document.getElementById('authorityMobileOverlay');
 
-  if (closeBtn) {
-    closeBtn.addEventListener("click", cerrarSidebarMovil);
-  }
+    if (closeBtn) {
+        closeBtn.addEventListener('click', cerrarSidebarMovil);
+    }
 
-  if (overlay) {
-    overlay.addEventListener("click", cerrarSidebarMovil);
-  }
+    if (overlay) {
+        overlay.addEventListener('click', cerrarSidebarMovil);
+    }
 }
 
 function abrirSidebarMovil() {
-  const sidebar = document.getElementById("authoritySidebar");
-  const overlay = document.getElementById("authorityMobileOverlay");
+    const sidebar = document.getElementById('authoritySidebar');
+    const overlay = document.getElementById('authorityMobileOverlay');
 
-  if (sidebar) sidebar.classList.add("open");
-  if (overlay) overlay.classList.add("open");
-  document.body.classList.add("authority-lock");
+    if (sidebar) sidebar.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+    document.body.classList.add('authority-lock');
 }
 
 function cerrarSidebarMovil() {
-  const sidebar = document.getElementById("authoritySidebar");
-  const overlay = document.getElementById("authorityMobileOverlay");
+    const sidebar = document.getElementById('authoritySidebar');
+    const overlay = document.getElementById('authorityMobileOverlay');
 
-  if (sidebar) sidebar.classList.remove("open");
-  if (overlay) overlay.classList.remove("open");
-  document.body.classList.remove("authority-lock");
+    if (sidebar) sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+    document.body.classList.remove('authority-lock');
 }
 
 function cerrarSesion() {
-  localStorage.removeItem("user");
-  window.location.href = "login.html";
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
 }
 
 function capitalizar(texto) {
-  if (!texto) return "";
-  return texto.charAt(0).toUpperCase() + texto.slice(1);
+    if (!texto) return '';
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
 function formatearFecha(fecha) {
-  if (!fecha) return "-";
-  const d = new Date(fecha);
-  if (Number.isNaN(d.getTime())) return "-";
+    if (!fecha) return '-';
+    const d = new Date(fecha);
+    if (Number.isNaN(d.getTime())) return '-';
 
-  return d.toLocaleDateString("es-DO", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+    return d.toLocaleDateString('es-DO', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+
+function formatearFechaHora(fecha) {
+    if (!fecha) return '-';
+    const d = new Date(fecha);
+    if (Number.isNaN(d.getTime())) return '-';
+
+    return d.toLocaleString('es-DO', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 function escapeHTML(valor) {
-  return String(valor)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    return String(valor)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs del sistema - Panel de Autoridades</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/foro.css">
+    <link rel="stylesheet" href="css/authority.css">
+</head>
+<body class="authority-app">
+    <div class="authority-layout">
+        <aside id="authoritySidebarMount"></aside>
+
+        <main class="authority-main">
+            <div id="authorityMobileTop"></div>
+
+            <section class="authority-page-header">
+                <div>
+                    <h1 class="authority-page-title">Logs del sistema</h1>
+                    <p class="authority-page-subtitle">
+                        Registro completo de acciones administrativas y actividad crítica.
+                    </p>
+                </div>
+
+                <div class="authority-header-actions">
+                    <input type="text" id="logsSearch" class="search-input authority-search-input" placeholder="Buscar por actor, email o descripción...">
+                    <select id="logsAccionFilter" class="filter-select authority-filter-select">
+                        <option value="">Todas las acciones</option>
+                        <option value="crear_cuenta">Crear cuenta</option>
+                        <option value="crear_reporte">Crear reporte</option>
+                        <option value="editar_reporte">Editar reporte</option>
+                        <option value="eliminar_reporte">Eliminar reporte</option>
+                        <option value="cambiar_estado_reporte">Cambiar estado</option>
+                        <option value="responder_reporte">Responder reporte</option>
+                        <option value="crear_comentario">Crear comentario</option>
+                        <option value="cambiar_rol">Cambiar rol</option>
+                        <option value="eliminar_cuenta">Eliminar cuenta</option>
+                        <option value="editar_perfil">Editar perfil</option>
+                    </select>
+
+                    <select id="logsEntidadFilter" class="filter-select authority-filter-select">
+                        <option value="">Todas las entidades</option>
+                        <option value="usuario">Usuario</option>
+                        <option value="reporte">Reporte</option>
+                        <option value="comentario">Comentario</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="authority-toolbar-cards">
+                <div class="authority-mini-stat">
+                    <span>Total logs</span>
+                    <b id="logsTotalCount">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Reportes</span>
+                    <b id="logsReportesCount">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Usuarios</span>
+                    <b id="logsUsuariosCount">0</b>
+                </div>
+                <div class="authority-mini-stat">
+                    <span>Comentarios</span>
+                    <b id="logsComentariosCount">0</b>
+                </div>
+            </section>
+
+            <section class="roles-board">
+                <div class="roles-board-top">
+                    <div class="roles-board-title">Actividad auditada</div>
+                    <div class="roles-board-subtitle">
+                        Solo los administradores pueden ver este historial.
+                    </div>
+                </div>
+
+                <div class="logs-table">
+                    <div class="logs-table-head">
+                        <div>Fecha</div>
+                        <div>Actor</div>
+                        <div>Rol</div>
+                        <div>Acción</div>
+                        <div>Entidad</div>
+                        <div>Descripción</div>
+                    </div>
+
+                    <div id="logsList" class="logs-table-body"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/authority-common.js"></script>
+    <script src="js/dashboard-logs.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>
